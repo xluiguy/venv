@@ -269,7 +269,7 @@ export default function RelatoriosPage() {
         }
       }
 
-      const response = await fetch('/api/teste-salvar-medicao', {
+      const response = await fetch('/api/medicoes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

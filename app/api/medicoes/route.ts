@@ -121,3 +121,60 @@ export async function DELETE(request: Request) {
     }, { status: 500 })
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    console.log('📝 Salvando medição via API principal:', body)
+    
+    const { nome, data_inicio, data_fim, total_lancamentos, total_clientes, total_valor, filtros_aplicados } = body
+
+    if (!nome) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Nome da medição é obrigatório' 
+      }, { status: 400 })
+    }
+
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+    
+    const dadosMedicao = {
+      nome,
+      data_inicio: data_inicio || null,
+      data_fim: data_fim || null,
+      total_lancamentos: total_lancamentos || 0,
+      total_clientes: total_clientes || 0,
+      total_valor: total_valor || 0,
+      filtros_aplicados: filtros_aplicados || { equipes: [], cliente: '' }
+    }
+
+    console.log('📊 Inserindo dados:', dadosMedicao)
+
+    const { data, error } = await supabase
+      .from('medicoes_salvas')
+      .insert([dadosMedicao])
+      .select()
+
+    if (error) {
+      console.error('❌ Erro ao inserir via Supabase:', error)
+      return NextResponse.json({ 
+        success: false, 
+        error: error.message,
+      }, { status: 500 })
+    }
+
+    console.log('✅ Medição salva com sucesso:', data)
+    return NextResponse.json({ 
+      success: true, 
+      data: data[0]
+    })
+
+  } catch (error) {
+    console.error('💥 Erro geral no POST:', error)
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Erro interno do servidor',
+    }, { status: 500 })
+  }
+}
