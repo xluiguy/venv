@@ -1,19 +1,28 @@
 import { NextResponse } from 'next/server'
+import { config } from '@/lib/config'
 
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  
-  return NextResponse.json({
-    success: true,
-    environment: process.env.NODE_ENV,
-    supabase: {
-      url: supabaseUrl ? '✅ Configurado' : '❌ Não configurado',
-      key: supabaseKey ? '✅ Configurado' : '❌ Não configurado',
-      keyPreview: supabaseKey ? `${supabaseKey.substring(0, 10)}...` : 'N/A'
-    },
-    timestamp: new Date().toISOString()
-  })
+  try {
+    return NextResponse.json({
+      success: true,
+      data: {
+        supabase: {
+          url: config.supabase.url,
+          hasAnonKey: !!config.supabase.anonKey,
+          hasServiceRoleKey: !!config.supabase.serviceRoleKey,
+        },
+        admin: {
+          emails: config.admin.emails,
+          defaultEmail: config.admin.defaultEmail,
+        },
+        environment: config.app.environment,
+        isDevelopment: config.app.isDevelopment,
+        isProduction: config.app.isProduction,
+      }
+    })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
+  }
 }
 
 

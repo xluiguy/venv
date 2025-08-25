@@ -1,86 +1,74 @@
 import { NextResponse } from 'next/server'
-import { getSupabaseClient } from '@/lib/supabaseClient'
-import { logger } from '@/lib/logger'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-async function getSupabaseAdmin() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createSupabaseServerClient()
+
+    const { data, error } = await supabase
+      .from('clientes')
+      .select('*')
+      .eq('id', params.id)
+      .single()
+
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, data })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
+  }
 }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-    try {
-        const supabase = await getSupabaseClient();
-        const { data, error } = await supabase
-            .from('clientes')
-            .select('id, nome, endereco, data_contrato')
-            .eq('id', params.id)
-            .single();
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const body = await request.json()
+    const supabase = createSupabaseServerClient()
 
-        if (error) {
-            if (error.code === 'PGRST116') {
-                return NextResponse.json({ success: false, error: 'Cliente não encontrado' }, { status: 404 });
-            }
-            logger.error(`Erro ao buscar cliente ${params.id}`, error);
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-        }
+    const { data, error } = await supabase
+      .from('clientes')
+      .update(body)
+      .eq('id', params.id)
+      .select()
+      .single()
 
-        return NextResponse.json({ success: true, data });
-    } catch (err: unknown) {
-        logger.error(`Erro inesperado ao buscar cliente ${params.id}`, err);
-        return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
+
+    return NextResponse.json({ success: true, data })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
+  }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    try {
-        const { nome, endereco, data_contrato } = await request.json();
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createSupabaseServerClient()
 
-        if (!nome) {
-            return NextResponse.json({ success: false, error: 'O nome é obrigatório.' }, { status: 400 });
-        }
+    const { error } = await supabase
+      .from('clientes')
+      .delete()
+      .eq('id', params.id)
 
-        const supabase = await getSupabaseClient();
-        const { data, error } = await supabase
-            .from('clientes')
-            .update({
-                nome,
-                endereco,
-                data_contrato,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', params.id)
-            .select('id, nome, endereco, data_contrato')
-            .single();
-
-        if (error) {
-            logger.error(`Erro ao atualizar cliente ${params.id}`, error);
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-        }
-
-        return NextResponse.json({ success: true, data });
-    } catch (err: unknown) {
-        logger.error(`Erro inesperado ao atualizar cliente ${params.id}`, err);
-        return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
-}
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    try {
-        const supabase = await getSupabaseClient();
-        const { error } = await supabase
-            .from('clientes')
-            .delete()
-            .eq('id', params.id);
-
-        if (error) {
-            logger.error(`Erro ao deletar cliente ${params.id}`, error);
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-        }
-
-        return NextResponse.json({ success: true, message: 'Cliente deletado com sucesso' });
-    } catch (err: unknown) {
-        logger.error(`Erro inesperado ao deletar cliente ${params.id}`, err);
-        return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
-    }
+    return NextResponse.json({ success: true, message: 'Cliente removido com sucesso' })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
+  }
 }
 
 

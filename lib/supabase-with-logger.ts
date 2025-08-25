@@ -1,12 +1,15 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { loggers } from './logger';
+import { config } from './config';
 
 // Wrapper do Supabase com logging integrado
 export class SupabaseWithLogger {
   private client: SupabaseClient;
   private logger = loggers.database;
 
-  constructor(url: string, key: string) {
+  constructor() {
+    const url = config.supabase.url;
+    const key = config.supabase.anonKey;
     this.client = createClient(url, key);
     this.logger.info('Supabase client initialized', { url });
   }
@@ -287,18 +290,11 @@ class TableWrapper {
 }
 
 // Função para criar cliente com logging
-export function createSupabaseWithLogger(url: string, key: string): SupabaseWithLogger {
-  return new SupabaseWithLogger(url, key);
+export function createSupabaseWithLogger(): SupabaseWithLogger {
+  return new SupabaseWithLogger();
 }
 
 // Função para obter cliente com logging (compatível com a função existente)
 export function getSupabaseWithLogger() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !key) {
-    throw new Error('Supabase URL and Anon Key are required');
-  }
-
-  return createSupabaseWithLogger(url, key);
+  return createSupabaseWithLogger();
 } 

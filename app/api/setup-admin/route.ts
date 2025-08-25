@@ -1,52 +1,21 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server'
+import { config } from '@/lib/config'
 
-export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return NextResponse.json({ success: false, error: 'Variáveis de ambiente do Supabase ausentes.' }, { status: 500 })
-  }
-
-  const supabase = createClient(supabaseUrl, serviceRoleKey)
-
-  const email = process.env.ADMIN_EMAIL || 'xavierluiguy@gmail.com'
-  const password = process.env.ADMIN_PASSWORD || '1a2b3c4d'
-
+export async function POST() {
   try {
-    // Tenta criar o usuário
+    const supabase = createClient(config.supabase.url, config.supabase.serviceRoleKey)
+
+    const email = config.admin.defaultEmail
+    const password = config.admin.defaultPassword
+
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { role: 'administrador' },
     })
 
     if (error) {
-      // Se o usuário já existir, apenas atualiza o metadado
-      if (error.message.includes('User already exists')) {
-        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
-        if (listError) {
-          return NextResponse.json({ success: false, error: 'Erro ao listar usuários.' }, { status: 500 });
-        }
-        
-        const user = users.find(u => u.email === email);
-        if (!user) {
-          return NextResponse.json({ success: false, error: 'Usuário já existe, mas não foi possível encontrá-lo para atualizar.' }, { status: 500 });
-        }
-        
-        const userId = user.id;
-        const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
-          user_metadata: { role: 'administrador' },
-        });
-
-        if (updateError) {
-          return NextResponse.json({ success: false, error: `Usuário já existe. Falha ao atualizar: ${updateError.message}` }, { status: 500 });
-        }
-        
-        return NextResponse.json({ success: true, message: 'Usuário administrador já existia e foi atualizado.' })
-      }
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 

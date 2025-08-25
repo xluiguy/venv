@@ -1,7 +1,9 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { getSupabaseClient } from '@/lib/supabaseClient'
+import { config } from '@/lib/config'
+import { User } from '@supabase/supabase-js'
 
 interface RoleContextType {
   userRole: string | null
@@ -82,7 +84,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       let role = 'operador' // padrão
       
       // Para administradores configurados, sempre administrador
-      const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || ['xavierluiguy@gmail.com']
+      const adminEmails = config.admin.emails
       if (adminEmails.includes(user.email || '')) {
         role = 'administrador'
         console.log('👑 RoleContext: Administrador identificado pelo email')

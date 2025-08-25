@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export async function GET(request: Request) {
   try {
@@ -12,8 +10,7 @@ export async function GET(request: Request) {
 
     if (!q && !includeAll) return NextResponse.json({ success: true, data: [] })
 
-    const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const supabase = createSupabaseServerClient()
 
     const { data, error } = await supabase
       .from('clientes')

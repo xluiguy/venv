@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+import { config } from './config'
 
 export type FontePreco = 'manual' | 'equipe' | 'servico' | 'global'
 
@@ -18,7 +16,7 @@ export async function resolverPrecoPainel(
     tipoServicoId?: string | null
   }
 ): Promise<ResolucaoPreco> {
-  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const supabase = createClient(config.supabase.url, config.supabase.anonKey)
 
   // 1) Override manual
   if (typeof options.overrideManual === 'number' && !Number.isNaN(options.overrideManual)) {
@@ -112,7 +110,7 @@ export async function resolverPrecoKwp(
     tipoServicoId?: string | null
   }
 ): Promise<ResolucaoPreco> {
-  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const supabase = createClient(config.supabase.url, config.supabase.anonKey)
 
   // 1) Override manual
   if (typeof options.overrideManual === 'number' && !Number.isNaN(options.overrideManual)) {

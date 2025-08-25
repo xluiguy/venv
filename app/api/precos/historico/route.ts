@@ -1,33 +1,44 @@
 import { NextResponse } from 'next/server'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseAnonKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
-
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
-    const body = await request.json()
-    const { origem, origem_id, campo, valor_anterior, valor_novo, alterado_por } = body || {}
+    const { searchParams } = new URL(request.url)
+    const empresaId = searchParams.get('empresa_id')
+    const tipoServicoId = searchParams.get('tipo_servico_id')
+    const dataInicio = searchParams.get('data_inicio')
+    const dataFim = searchParams.get('data_fim')
 
-    if (!origem || !campo) {
-      return NextResponse.json({ success: false, error: 'origem e campo são obrigatórios' }, { status: 400 })
+    if (!empresaId) {
+      return NextResponse.json({ success: false, error: 'empresa_id é obrigatório' }, { status: 400 })
     }
 
-    const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+    const supabase = createSupabaseServerClient()
 
-    const { error } = await supabase.from('historico_precos').insert([
-      {
-        origem,
-        origem_id: origem_id || null,
-        campo,
-        valor_anterior: valor_anterior ?? null,
-        valor_novo: valor_novo ?? null,
-        alterado_por: alterado_por || 'ui',
-      },
-    ])
+    let query = supabase
+      .from('precos')
+      .select('*')
+      .eq('empresa_id', empresaId)
 
-    if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 })
-    return NextResponse.json({ success: true })
+    if (tipoServicoId) {
+      query = query.eq('tipo_servico_id', tipoServicoId)
+    }
+
+    if (dataInicio) {
+      query = query.gte('created_at', dataInicio)
+    }
+
+    if (dataFim) {
+      query = query.lte('created_at', dataFim)
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false })
+
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, data: data || [] })
   } catch (err) {
     return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
   }

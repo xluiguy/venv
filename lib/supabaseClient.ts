@@ -1,5 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr'
 import { type Database } from './supabase'
+import { config } from './config'
 
 let supabaseClient: ReturnType<typeof createBrowserClient<Database>> | null = null
 
@@ -8,13 +9,6 @@ export function getSupabaseClient() {
     return supabaseClient
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase URL and anonymous key are required.')
-  }
-
-  supabaseClient = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)
+  supabaseClient = createBrowserClient<Database>(config.supabase.url, config.supabase.anonKey)
   return supabaseClient
 }

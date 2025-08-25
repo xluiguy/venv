@@ -1,30 +1,29 @@
 import { NextResponse } from 'next/server'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
-
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const supabase = createSupabaseServerClient()
 
     const { data, error } = await supabase
-      .from('lancamentos')
+      .from('clientes')
       .select('data_contrato')
-      .eq('cliente_id', params.id)
-      .order('data_contrato', { ascending: false })
-      .limit(1)
+      .eq('id', params.id)
       .single()
 
     if (error) {
-      // Se não encontrar, não é um erro, apenas não há dados
-      if (error.code === 'PGRST116') {
-        return NextResponse.json({ success: true, data: null })
-      }
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
-    
-    return NextResponse.json({ success: true, data })
+
+    return NextResponse.json({ 
+      success: true, 
+      data: { 
+        ultimaDataContrato: data?.data_contrato || null 
+      } 
+    })
   } catch (err) {
     return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
   }
