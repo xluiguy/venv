@@ -282,7 +282,7 @@ Passos:
           `"${item.nome_cliente}"`,
           `"${item.data_contrato ? format(new Date(item.data_contrato), 'dd/MM/yyyy', { locale: ptBR }) : 'Não informado'}"`,
           `"${item.tipo_servico}"`,
-          `"${item.tipo_aditivo || item.motivo_desconto || item.tipo_padrao_entrada || item.motivo_visita || item.motivo_obra || ''}"`,
+          `"${item.tipo_aditivo || item.motivo_desconto || item.tipo_padrao || item.motivo_visita || item.motivo_obra || ''}"`,
           item.valor_servico.toFixed(2),
           `"${item.motivo_desconto || item.motivo_visita || item.motivo_obra || ''}"`
         ].join(','))
@@ -403,7 +403,7 @@ Passos:
               quantidade: 0
             }
           }
-          acc[tipo].clientes.add(item.nome_cliente)
+          acc[tipo].clientes.add(item.nome_cliente || 'Cliente não informado')
           acc[tipo].valor += item.valor_servico || 0
           acc[tipo].quantidade += 1
           return acc
@@ -476,9 +476,9 @@ Passos:
           item.equipes?.nome || '',
           item.equipes?.empresas?.nome || '',
           item.nome_cliente || '',
-          format(new Date(item.data_contrato), 'dd/MM/yyyy', { locale: ptBR }),
+          item.data_contrato ? format(new Date(item.data_contrato), 'dd/MM/yyyy', { locale: ptBR }) : 'Não informado',
           item.tipo_servico || '',
-          item.tipo_aditivo || item.motivo_desconto || item.tipo_padrao_entrada || item.motivo_visita || item.motivo_obra || '',
+          item.tipo_aditivo || item.motivo_desconto || item.tipo_padrao || item.motivo_visita || item.motivo_obra || '',
           `R$ ${item.valor_servico?.toFixed(2) || '0,00'}`
         ])
 
@@ -663,7 +663,7 @@ Passos:
                                 {medicao.nome}
                               </h4>
                               <span className="text-sm text-gray-500">
-                                {format(new Date(medicao.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                {medicao.created_at ? format(new Date(medicao.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR }) : 'Data não informada'}
                               </span>
                             </div>
                             
