@@ -63,9 +63,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Se o usuário estiver logado e tentar acessar a página de login, redireciona para a home
+  // Se o usuário estiver logado e tentar acessar a página de login, redireciona para o dashboard
   if (user && request.nextUrl.pathname === '/login') {
-    return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // Se o usuário estiver logado e acessar a raiz, redireciona para o dashboard
+  if (user && request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return response
