@@ -204,7 +204,7 @@ export default function PermissoesPage() {
         setRoles(JSON.parse(saved))
         toast.success('Permissões carregadas')
       } else {
-        toast.info('Nenhuma configuração salva encontrada')
+        toast.success('Usando configurações padrão')
       }
     } catch (error) {
       console.error('Erro ao carregar permissões:', error)

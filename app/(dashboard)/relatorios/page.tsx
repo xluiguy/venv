@@ -27,6 +27,45 @@ import { EditarLancamentoModal } from '@/components/EditarLancamentoModal'
 // Configuração para evitar build estático
 export const dynamic = 'force-dynamic'
 
+interface Lancamento {
+  id: string
+  equipe_id: string | null
+  cliente: string
+  data_contrato: string | null
+  tipo_servico: string
+  numero_paineis: number | null
+  potencia_painel: number | null
+  valor_servico: number
+  tipo_aditivo: string | null
+  motivo_desconto: string | null
+  tipo_padrao: string | null
+  motivo_visita: string | null
+  descricao_material: string | null
+  motivo_obra: string | null
+  created_at: string | null
+  updated_at: string | null
+  data_execucao: string | null
+  valor_unitario_decimal: number | null
+  valor_bruto_decimal: number | null
+  aditivo_decimal: number | null
+  desconto_decimal: number | null
+  valor_total_decimal: number | null
+  fonte_preco: string | null
+  tipo_servico_id: string | null
+  cliente_id: string | null
+  nome_cliente: string | null
+}
+
+interface Equipe {
+  id: string
+  empresa_id: string | null
+  nome: string
+  valor_por_kwp_decimal: number | null
+  valor_por_painel_decimal: number | null
+  created_at: string | null
+  updated_at: string | null
+}
+
 interface LancamentoComRelacoes extends Lancamento {
   equipe_nome: string;
   empresa_nome: string;
