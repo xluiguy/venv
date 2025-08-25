@@ -11,8 +11,8 @@ export async function GET() {
 
   const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-  const email = 'xavierluiguy@gmail.com'
-  const password = '1a2b3c4d'
+  const email = process.env.ADMIN_EMAIL || 'xavierluiguy@gmail.com'
+  const password = process.env.ADMIN_PASSWORD || '1a2b3c4d'
 
   try {
     // Tenta criar o usuário

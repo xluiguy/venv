@@ -81,8 +81,9 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       
       let role = 'operador' // padrão
       
-      // Para xavierluiguy@gmail.com, sempre administrador
-      if (user.email === 'xavierluiguy@gmail.com') {
+      // Para administradores configurados, sempre administrador
+      const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || ['xavierluiguy@gmail.com']
+      if (adminEmails.includes(user.email || '')) {
         role = 'administrador'
         console.log('👑 RoleContext: Administrador identificado pelo email')
       } else {

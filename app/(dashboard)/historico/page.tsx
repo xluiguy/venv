@@ -150,8 +150,8 @@ export default function HistoricoPage() {
         {
           id: 1,
           timestamp: new Date().toISOString(),
-          user_email: 'xavierluiguy@gmail.com',
-          user_name: 'Xavier Luiguy',
+          user_email: 'admin@resolveenergia.com',
+          user_name: 'Administrador',
           action: 'INSERT',
           tabela: 'clientes',
           registro_id: 'cliente_001',
@@ -194,8 +194,8 @@ export default function HistoricoPage() {
         {
           id: 3,
           timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hora atrás
-          user_email: 'xavierluiguy@gmail.com',
-          user_name: 'Xavier Luiguy',
+          user_email: 'admin@resolveenergia.com',
+          user_name: 'Administrador',
           action: 'DELETE',
           tabela: 'empresas',
           registro_id: 'emp_002',

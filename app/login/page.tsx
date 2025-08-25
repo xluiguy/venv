@@ -162,7 +162,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          <p>Admin: xavierluiguy@gmail.com | Senha: 1a2b3c4d</p>
+          <p>© 2025 Resolve Finance. Todos os direitos reservados.</p>
         </div>
       </div>
     </div>
