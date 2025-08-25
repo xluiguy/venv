@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const data = {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'NAO DEFINIDO',
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'NAO DEFINIDO',
-    SUPABASE_SERVICE_ROLE_SET: process.env.SUPABASE_SERVICE_ROLE ? 'Sim, esta definida' : 'NAO DEFINIDO',
-  }
-
-  return NextResponse.json(data)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  return NextResponse.json({
+    success: true,
+    environment: process.env.NODE_ENV,
+    supabase: {
+      url: supabaseUrl ? '✅ Configurado' : '❌ Não configurado',
+      key: supabaseKey ? '✅ Configurado' : '❌ Não configurado',
+      keyPreview: supabaseKey ? `${supabaseKey.substring(0, 10)}...` : 'N/A'
+    },
+    timestamp: new Date().toISOString()
+  })
 }
 
 
