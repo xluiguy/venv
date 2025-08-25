@@ -73,7 +73,7 @@ interface LancamentoComRelacoes extends Lancamento {
 }
 
 export default function RelatoriosPage() {
-  const [equipes, setEquipes] = useState<(Equipe & { empresas: { nome: string } })[]>([])
+  const [equipes, setEquipes] = useState<(Equipe & { empresas: { nome: string } | null })[]>([])
   const [lancamentos, setLancamentos] = useState<LancamentoComRelacoes[]>([])
   const [loading, setLoading] = useState(false)
   const [filtros, setFiltros] = useState({

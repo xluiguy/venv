@@ -170,7 +170,7 @@ export default function TiposServicoPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-3">
                       <h3 className="text-lg font-semibold text-gray-900">{tipo.nome}</h3>
-                      {tipo.valor_unitario < 0 && (
+                      {(tipo.valor_unitario ?? 0) < 0 && (
                         <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
                           Desconto
                         </span>

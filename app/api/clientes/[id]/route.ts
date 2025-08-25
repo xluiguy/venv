@@ -19,13 +19,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
             if (error.code === 'PGRST116') {
                 return NextResponse.json({ success: false, error: 'Cliente não encontrado' }, { status: 404 });
             }
-            logger.error({ message: `Erro ao buscar cliente ${params.id}`, errorDetails: error });
+            logger.error(`Erro ao buscar cliente ${params.id}`, error);
             return NextResponse.json({ success: false, error: error.message }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, data });
     } catch (err: unknown) {
-        logger.error({ message: `Erro inesperado ao buscar cliente ${params.id}`, errorDetails: err });
+        logger.error(`Erro inesperado ao buscar cliente ${params.id}`, err);
         return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
     }
 }
@@ -52,13 +52,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             .single();
 
         if (error) {
-            logger.error({ message: `Erro ao atualizar cliente ${params.id}`, errorDetails: error });
+            logger.error(`Erro ao atualizar cliente ${params.id}`, error);
             return NextResponse.json({ success: false, error: error.message }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, data });
     } catch (err: unknown) {
-        logger.error({ message: `Erro inesperado ao atualizar cliente ${params.id}`, errorDetails: err });
+        logger.error(`Erro inesperado ao atualizar cliente ${params.id}`, err);
         return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
     }
 }
@@ -72,13 +72,13 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
             .eq('id', params.id);
 
         if (error) {
-            logger.error({ message: `Erro ao deletar cliente ${params.id}`, errorDetails: error });
+            logger.error(`Erro ao deletar cliente ${params.id}`, error);
             return NextResponse.json({ success: false, error: error.message }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, message: 'Cliente deletado com sucesso' });
     } catch (err: unknown) {
-        logger.error({ message: `Erro inesperado ao deletar cliente ${params.id}`, errorDetails: err });
+        logger.error(`Erro inesperado ao deletar cliente ${params.id}`, err);
         return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
     }
 }

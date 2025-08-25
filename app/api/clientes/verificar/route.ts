@@ -79,10 +79,7 @@ export async function POST() {
 
     if (error) {
       // Log detalhado do erro
-      logger.error({
-        message: 'Erro ao executar SQL para verificar/criar tabela clientes via RPC',
-        errorDetails: error,
-      });
+      logger.error('Erro ao executar SQL para verificar/criar tabela clientes via RPC', error);
 
       // Erro 42P07: Tabela já existe (não é um erro crítico aqui)
       if (error.code === '42P07') { 
@@ -95,10 +92,7 @@ export async function POST() {
 
     return NextResponse.json({ success: true, message: 'Tabela "clientes" verificada/criada com sucesso.' })
   } catch (err: unknown) {
-    logger.error({
-        message: 'Erro inesperado na rota /api/clientes/verificar',
-        errorDetails: err,
-    });
+    logger.error('Erro inesperado na rota /api/clientes/verificar', err);
     return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
   }
 }
