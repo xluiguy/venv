@@ -71,8 +71,11 @@ Sistema web moderno para gestão financeira da Resolve Energia Solar, desenvolvi
    
    Edite o arquivo `.env.local` com suas credenciais do Supabase:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
+   NEXT_PUBLIC_SUPABASE_URL=https://fjyhxzjzobkuvwdqdtld.supabase.co
+   
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqeWh4emp6b2JrdXZ3ZHFkdGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMTIzMDksImV4cCI6MjA2OTg4ODMwOX0.2GuNZxA4VGUkMPhfthzwn__AeWtGvCGkm1RB8NKbMVo
+
+   SUPABASE_SERVICE_ROLE=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqeWh4emp6b2JrdXZ3ZHFkdGxkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDMxMjMwOSwiZXhwIjoyMDY5ODg4MzA5fQ.F-cJvNpPNqY3p6cNkpzgp_Xys9Wh7W5BLRsSkedv5hw
    ```
 
 4. **Execute o projeto**

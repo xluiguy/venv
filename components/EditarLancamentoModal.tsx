@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { getSupabaseClient, type Equipe, type Lancamento } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabaseClient'
 import { X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -18,7 +18,6 @@ export function EditarLancamentoModal({ isOpen, onClose, onSave, lancamento }: E
   const [formData, setFormData] = useState({
     equipe_id: '',
     nome_cliente: '',
-    data_contrato: '',
     data_execucao: '',
     tipo_servico: '',
     tipo_aditivo: '',
@@ -41,8 +40,7 @@ export function EditarLancamentoModal({ isOpen, onClose, onSave, lancamento }: E
       setFormData({
         equipe_id: lancamento.equipe_id,
         nome_cliente: lancamento.nome_cliente,
-        data_contrato: lancamento.data_contrato,
-        data_execucao: lancamento.data_execucao || '',
+        data_execucao: lancamento.data_execucao ? new Date(lancamento.data_execucao).toISOString().split('T')[0] : '',
         tipo_servico: lancamento.tipo_servico,
         tipo_aditivo: lancamento.tipo_aditivo || '',
         motivo_desconto: lancamento.motivo_desconto || '',
@@ -78,7 +76,6 @@ export function EditarLancamentoModal({ isOpen, onClose, onSave, lancamento }: E
       const dadosAtualizados = {
         equipe_id: formData.equipe_id,
         nome_cliente: formData.nome_cliente,
-        data_contrato: formData.data_contrato,
         data_execucao: formData.data_execucao || null,
         tipo_servico: formData.tipo_servico,
         tipo_aditivo: formData.tipo_aditivo || null,
@@ -150,20 +147,6 @@ export function EditarLancamentoModal({ isOpen, onClose, onSave, lancamento }: E
                 type="text"
                 value={formData.nome_cliente}
                 onChange={(e) => handleInputChange('nome_cliente', e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                required
-              />
-            </div>
-
-            {/* Data do Contrato */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Data do Contrato *
-              </label>
-              <input
-                type="date"
-                value={formData.data_contrato}
-                onChange={(e) => handleInputChange('data_contrato', e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required
               />

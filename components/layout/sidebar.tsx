@@ -1,141 +1,126 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { 
-  BarChart3, 
-  Building2, 
-  FileText, 
+import Link from 'next/link'
+import {
+  LayoutDashboard,
+  Building2,
   Plus,
-  Activity,
-  Menu,
-  X,
-  Calendar
+  BarChart2,
+  FileText,
+  Users,
+  GitBranch,
+  LogOut,
+  Users2,
+  History
 } from 'lucide-react'
-import { useState } from 'react'
+import { getSupabaseClient } from '@/lib/supabaseClient'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
-const navigation = [
-  { 
-    name: 'Dashboard', 
-    href: '/', 
-    icon: BarChart3,
-    description: 'Demonstrativo financeiro'
-  },
-  { 
-    name: 'Empresas', 
-    href: '/empresas', 
-    icon: Building2,
-    description: 'Gestão de empresas'
-  },
-  { 
-    name: 'Lançamentos', 
-    href: '/lancamentos', 
-    icon: Plus,
-    description: 'Controle de lançamentos'
-  },
-  { 
-    name: 'Relatórios', 
-    href: '/relatorios', 
-    icon: FileText,
-    description: 'Relatórios financeiros'
-  },
-  { 
-    name: 'Medições', 
-    href: '/medicoes', 
-    icon: Calendar,
-    description: 'Medições salvas'
-  },
-  { 
-    name: 'Logs', 
-    href: '/logs', 
-    icon: Activity,
-    description: 'Sistema de auditoria'
-  },
+const navLinks = [
+  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Empresas', href: '/empresas', icon: Building2 },
+  { name: 'Lançamentos', href: '/lancamentos', icon: Plus },
+  { name: 'Relatórios', href: '/relatorios', icon: BarChart2 },
+  { name: 'Medições', href: '/medicoes', icon: FileText },
+  { name: 'Clientes', href: '/clientes', icon: Users },
 ]
 
-export function Sidebar() {
+// Hook para buscar o perfil do usuário
+function useUserProfile() {
+  const [profile, setProfile] = useState<{ role: string } | null>(null)
+  
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const supabase = getSupabaseClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        
+        if (profileData) setProfile(profileData)
+      }
+    }
+    
+    fetchProfile()
+  }, [])
+  
+  return profile
+}
+
+
+export default function Sidebar() {
   const pathname = usePathname()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const router = useRouter()
+  const userProfile = useUserProfile()
+
+  const handleLogout = async () => {
+    const supabase = getSupabaseClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   return (
-    <>
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-white shadow-md"
-        >
-          {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </Button>
-      </div>
-
-      {/* Mobile menu overlay */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50" onClick={() => setIsMobileMenuOpen(false)} />
-      )}
-
-      {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center justify-center h-20 px-6 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Resolve Finance</h1>
-                <p className="text-sm text-gray-500">Flow System</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 px-6 py-8 space-y-3">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    'group flex items-center px-4 py-4 text-sm font-medium rounded-xl transition-all duration-200',
-                    isActive
-                      ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-r-4 border-blue-500 shadow-sm'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm'
-                  )}
-                >
-                  <item.icon className={cn(
-                    'w-5 h-5 mr-4 transition-colors duration-200',
-                    isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
-                  )} />
-                  <div className="flex-1">
-                    <div className="font-medium">{item.name}</div>
-                    <div className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mt-0.5">
-                      {item.description}
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
-          </nav>
-
-          {/* Footer */}
-          <div className="p-6 border-t border-gray-200">
-            <div className="text-xs text-gray-500 text-center">
-              © 2024 Resolve Energia Solar
-            </div>
-          </div>
+    <aside className="fixed inset-y-0 left-0 z-10 hidden w-64 flex-col border-r bg-white sm:flex">
+      <nav className="flex flex-col gap-4 p-4">
+        <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+          <span className="">Resolve Finance</span>
+        </Link>
+        <ul className="flex flex-1 flex-col gap-1">
+          {navLinks.map((link) => (
+            <li key={link.name}>
+              <Link
+                href={link.href}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 ${
+                  pathname === link.href ? 'bg-gray-100 text-gray-900' : ''
+                }`}
+              >
+                <link.icon className="h-4 w-4" />
+                {link.name}
+              </Link>
+            </li>
+          ))}
+          {(userProfile?.role === 'administrador' || userProfile?.role === 'fiscal') && (
+            <li>
+              <Link
+                href="/historico"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 ${
+                  pathname === '/historico' ? 'bg-gray-100 text-gray-900' : ''
+                }`}
+              >
+                <History className="h-4 w-4" />
+                Histórico
+              </Link>
+            </li>
+          )}
+          {userProfile?.role === 'administrador' && (
+            <li>
+              <Link
+                href="/gestao-usuarios"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 ${
+                  pathname === '/gestao-usuarios' ? 'bg-gray-100 text-gray-900' : ''
+                }`}
+              >
+                <Users2 className="h-4 w-4" />
+                Gestão de Usuários
+              </Link>
+            </li>
+          )}
+        </ul>
+        <div className="mt-auto p-4">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900"
+          >
+            <LogOut className="h-4 w-4" />
+            Sair
+          </button>
         </div>
-      </div>
-    </>
+      </nav>
+    </aside>
   )
 } 
