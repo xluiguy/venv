@@ -42,7 +42,7 @@ export async function GET() {
         }, { status: 500 })
       }
 
-      console.log('🔍 API: Resultado da consulta:', { data: data?.length || 0, error: error?.message || null })
+      console.log('🔍 API: Resultado da consulta:', { data: data?.length || 0, error: null })
       
       if (data && Array.isArray(data)) {
         console.log(`✅ API: Medições carregadas: ${data.length} registros`)

@@ -88,14 +88,14 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       } else {
         // Para outros usuários, tentar buscar na tabela profiles
         try {
-          const { data: profileData } = await supabase
-            .from('profiles')
+          const { data: profileData, error } = await supabase
+            .from('profiles' as any)
             .select('role')
             .eq('id', user.id)
             .single()
           
-          if (profileData?.role) {
-            role = profileData.role
+          if (profileData && !error && (profileData as any).role) {
+            role = (profileData as any).role
             console.log('📊 RoleContext: Role encontrado na tabela:', role)
           }
         } catch (error) {

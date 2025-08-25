@@ -77,13 +77,13 @@ export function EditarLancamentoModal({ isOpen, onClose, onSave, lancamento }: E
   useEffect(() => {
     if (lancamento) {
       setFormData({
-        equipe_id: lancamento.equipe_id,
-        nome_cliente: lancamento.nome_cliente,
+        equipe_id: lancamento.equipe_id || '',
+        nome_cliente: lancamento.nome_cliente || '',
         data_execucao: lancamento.data_execucao ? new Date(lancamento.data_execucao).toISOString().split('T')[0] : '',
         tipo_servico: lancamento.tipo_servico,
         tipo_aditivo: lancamento.tipo_aditivo || '',
         motivo_desconto: lancamento.motivo_desconto || '',
-        tipo_padrao_entrada: lancamento.tipo_padrao_entrada || '',
+        tipo_padrao_entrada: lancamento.tipo_padrao || '',
         motivo_visita: lancamento.motivo_visita || '',
         motivo_obra: lancamento.motivo_obra || '',
         valor_servico: lancamento.valor_servico

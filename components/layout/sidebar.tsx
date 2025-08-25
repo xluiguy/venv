@@ -37,12 +37,12 @@ function useUserProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data: profileData, error } = await supabase
-          .from('profiles')
+          .from('profiles' as any)
           .select('role')
           .eq('id', user.id)
           .single()
         
-        if (profileData) setProfile(profileData)
+        if (profileData && !error) setProfile(profileData as unknown as { role: string })
       }
     }
     

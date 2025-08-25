@@ -26,12 +26,17 @@ export async function GET() {
     if (error) {
       // Se o usuário já existir, apenas atualiza o metadado
       if (error.message.includes('User already exists')) {
-        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers({ email });
-        if (listError || users.length === 0) {
+        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+        if (listError) {
+          return NextResponse.json({ success: false, error: 'Erro ao listar usuários.' }, { status: 500 });
+        }
+        
+        const user = users.find(u => u.email === email);
+        if (!user) {
           return NextResponse.json({ success: false, error: 'Usuário já existe, mas não foi possível encontrá-lo para atualizar.' }, { status: 500 });
         }
         
-        const userId = users[0].id;
+        const userId = user.id;
         const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
           user_metadata: { role: 'administrador' },
         });
