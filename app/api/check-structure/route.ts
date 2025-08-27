@@ -5,19 +5,47 @@ export async function GET() {
   try {
     const supabase = createSupabaseServerClient()
 
-    const { data, error } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .eq('table_schema', 'public')
+    // Lista de tabelas que queremos verificar (tipos específicos do Supabase)
+    const tabelasParaVerificar = [
+      'empresas',
+      'clientes', 
+      'equipes',
+      'tipos_servico',
+      'lancamentos',
+      'medicoes_salvas',
+      'configuracoes_precos',
+      'historico_precos',
+      'precos_tipos_empresa'
+    ] as const
 
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    const resultados: Record<string, { exists: boolean; error: string | null }> = {}
+
+    // Verificar cada tabela individualmente
+    for (const tabela of tabelasParaVerificar) {
+      try {
+        const { data, error } = await supabase
+          .from(tabela)
+          .select('*')
+          .limit(1)
+
+        if (error) {
+          if (error.code === '42P01') {
+            resultados[tabela] = { exists: false, error: 'Tabela não existe' }
+          } else {
+            resultados[tabela] = { exists: true, error: error.message }
+          }
+        } else {
+          resultados[tabela] = { exists: true, error: null }
+        }
+      } catch (err) {
+        resultados[tabela] = { exists: false, error: 'Erro ao verificar' }
+      }
     }
 
     return NextResponse.json({ 
       success: true, 
       data: { 
-        tables: data?.map(t => t.table_name) || [] 
+        tables: resultados
       } 
     })
   } catch (err) {

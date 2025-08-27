@@ -9,7 +9,7 @@ export async function GET(
     const supabase = createSupabaseServerClient()
 
     const { data, error } = await supabase
-      .from('precos')
+      .from('precos_tipos_empresa')
       .select('*')
       .eq('empresa_id', params.id)
 
@@ -32,7 +32,7 @@ export async function POST(
     const supabase = createSupabaseServerClient()
 
     const { data, error } = await supabase
-      .from('precos')
+      .from('precos_tipos_empresa')
       .insert([{ ...body, empresa_id: params.id }])
       .select()
       .single()

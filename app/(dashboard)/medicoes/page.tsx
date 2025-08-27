@@ -15,11 +15,13 @@ import {
   Database,
   Wrench,
   RefreshCw,
-  FileText
+  FileText,
+  Save
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { SalvarMedicaoModal } from '@/components/SalvarMedicaoModal'
 
 // Configuração para evitar build estático
 export const dynamic = 'force-dynamic'
@@ -42,6 +44,18 @@ export default function MedicoesPage() {
   const [tabelaNaoExiste, setTabelaNaoExiste] = useState(false)
   const [criandoTabela, setCriandoTabela] = useState(false)
   const [debugInfo, setDebugInfo] = useState<string[]>([])
+  const [showSalvarModal, setShowSalvarModal] = useState(false)
+  const [filtrosAtuais, setFiltrosAtuais] = useState({
+    data_inicio: null as string | null,
+    data_fim: null as string | null,
+    equipes: [] as string[],
+    cliente: ''
+  })
+  const [resumoAtual, setResumoAtual] = useState({
+    total_lancamentos: 0,
+    total_clientes: 0,
+    total_valor: 0
+  })
 
   useEffect(() => {
     carregarMedicoes()
@@ -526,6 +540,85 @@ Passos:
     }
   }
 
+  const salvarMedicao = async (nome: string) => {
+    try {
+      console.log('💾 Salvando medição:', nome)
+      
+      // Validar e limpar datas vazias
+      const dataInicio = filtrosAtuais.data_inicio && 
+        typeof filtrosAtuais.data_inicio === 'string' && 
+        filtrosAtuais.data_inicio.trim() !== '' 
+        ? filtrosAtuais.data_inicio 
+        : null
+      
+      const dataFim = filtrosAtuais.data_fim && 
+        typeof filtrosAtuais.data_fim === 'string' && 
+        filtrosAtuais.data_fim.trim() !== '' 
+        ? filtrosAtuais.data_fim 
+        : null
+      
+      const dadosMedicao = {
+        nome,
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+        total_lancamentos: resumoAtual.total_lancamentos,
+        total_clientes: resumoAtual.total_clientes,
+        total_valor: resumoAtual.total_valor,
+        filtros_aplicados: {
+          ...filtrosAtuais,
+          data_inicio: dataInicio,
+          data_fim: dataFim
+        }
+      }
+
+      console.log('📊 Dados da medição:', dadosMedicao)
+      console.log('🔍 Debug - data_inicio:', { 
+        original: filtrosAtuais.data_inicio, 
+        tipo: typeof filtrosAtuais.data_inicio, 
+        processado: dataInicio 
+      })
+      console.log('🔍 Debug - data_fim:', { 
+        original: filtrosAtuais.data_fim, 
+        tipo: typeof filtrosAtuais.data_fim, 
+        processado: dataFim 
+      })
+
+      // Tentar via API primeiro
+      try {
+        const response = await fetch('/api/salvar-medicao-mcp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dadosMedicao)
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success) {
+            console.log('✅ Medição salva via API:', result.data)
+            toast.success('Medição salva com sucesso!')
+            carregarMedicoes()
+            return
+          } else {
+            console.error('❌ API retornou erro:', result.error)
+            throw new Error(result.error)
+          }
+        } else {
+          console.error('❌ API retornou status:', response.status)
+          throw new Error(`Erro HTTP: ${response.status}`)
+        }
+      } catch (apiError) {
+        console.error('❌ Erro na API:', apiError)
+        throw apiError
+      }
+    } catch (error) {
+      console.error('❌ Erro ao salvar medição:', error)
+      toast.error(`Erro ao salvar medição: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
+      throw error
+    }
+  }
+
   const excluirMedicao = async (medicaoId: string) => {
     if (!confirm('Tem certeza que deseja excluir esta medição?')) return
 
@@ -598,14 +691,36 @@ Passos:
                   Visualize e gerencie as medições salvas dos relatórios consolidados
                 </p>
               </div>
-              <Button
-                onClick={carregarMedicoes}
-                disabled={loading}
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                Recarregar
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setFiltrosAtuais({
+                      data_inicio: null,
+                      data_fim: null,
+                      equipes: [],
+                      cliente: ''
+                    })
+                    setResumoAtual({
+                      total_lancamentos: 0,
+                      total_clientes: 0,
+                      total_valor: 0
+                    })
+                    setShowSalvarModal(true)
+                  }}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                >
+                  <Save className="w-4 h-4" />
+                  Nova Medição
+                </Button>
+                <Button
+                  onClick={carregarMedicoes}
+                  disabled={loading}
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  Recarregar
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -757,6 +872,15 @@ Passos:
               </div>
             </div>
           )}
+
+          {/* Modal para Salvar Medição */}
+          <SalvarMedicaoModal
+            isOpen={showSalvarModal}
+            onClose={() => setShowSalvarModal(false)}
+            onSave={salvarMedicao}
+            filtros={filtrosAtuais}
+            resumo={resumoAtual}
+          />
         </div>
       </div>
     </div>

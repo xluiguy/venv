@@ -10,8 +10,8 @@ interface SalvarMedicaoModalProps {
   onClose: () => void
   onSave: (nome: string) => Promise<void>
   filtros: {
-    data_inicio: string
-    data_fim: string
+    data_inicio: string | null
+    data_fim: string | null
     equipes: string[]
     cliente: string
   }
@@ -99,7 +99,7 @@ export function SalvarMedicaoModal({
                 <span className="text-gray-900">
                   {filtros.data_inicio && filtros.data_fim 
                     ? `${new Date(filtros.data_inicio).toLocaleDateString('pt-BR')} - ${new Date(filtros.data_fim).toLocaleDateString('pt-BR')}`
-                    : 'Todos os períodos'
+                    : 'Período não definido'
                   }
                 </span>
               </div>

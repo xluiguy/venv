@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const supabase = createSupabaseServerClient()
 
     let query = supabase
-      .from('precos')
+      .from('precos_tipos_empresa')
       .select('*')
       .eq('empresa_id', empresaId)
 

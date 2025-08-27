@@ -7,7 +7,7 @@ export async function GET() {
     const supabase = createSupabaseServerClient()
 
     const { data, error } = await supabase
-      .from('medicoes')
+      .from('medicoes_salvas')
       .select('count')
       .limit(1)
 

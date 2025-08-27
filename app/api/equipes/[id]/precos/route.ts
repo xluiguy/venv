@@ -10,6 +10,11 @@ export async function GET(
     const tipoId = searchParams.get('tipo_servico_id')
     if (!tipoId) return NextResponse.json({ success: true, data: [] })
 
+    // TODO: Implementar quando a tabela precos_tipos_equipe for criada
+    // Por enquanto, retornar dados vazios
+    return NextResponse.json({ success: true, data: [] })
+
+    /*
     const supabase = createSupabaseServerClient()
 
     const { data, error } = await supabase
@@ -21,6 +26,7 @@ export async function GET(
 
     if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     return NextResponse.json({ success: true, data: data || [] })
+    */
   } catch (err) {
     return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 })
   }
