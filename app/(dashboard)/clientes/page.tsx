@@ -58,7 +58,7 @@ export default function ClientesPage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-        {hasPermission('clientes', 'create') && (
+        {hasPermission('clientes_create') && (
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             Novo Cliente
@@ -117,12 +117,12 @@ export default function ClientesPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
-                    {hasPermission('clientes', 'update') && (
+                    {hasPermission('clientes_edit') && (
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4" />
                       </Button>
                     )}
-                    {hasPermission('clientes', 'delete') && (
+                    {hasPermission('clientes_delete') && (
                       <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
                         <Trash2 className="w-4 h-4" />
                       </Button>

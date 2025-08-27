@@ -69,7 +69,7 @@ export default function LancamentosPage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Lançamentos</h1>
-        {hasPermission('lancamentos', 'create') && (
+        {hasPermission('lancamentos_create') && (
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             Novo Lançamento
@@ -175,12 +175,12 @@ export default function LancamentosPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
-                    {hasPermission('lancamentos', 'update') && (
+                    {hasPermission('lancamentos_edit') && (
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4" />
                       </Button>
                     )}
-                    {hasPermission('lancamentos', 'delete') && (
+                    {hasPermission('lancamentos_delete') && (
                       <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
                         <Trash2 className="w-4 h-4" />
                       </Button>
