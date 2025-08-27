@@ -48,7 +48,7 @@ export default function HistoricoPage() {
     return matchesSearch && matchesTabela
   })
 
-  const tabelasUnicas = [...new Set(historico.map(item => item.tabela))]
+  const tabelasUnicas = Array.from(new Set(historico.map(item => item.tabela)))
 
   if (loading) {
     return (
